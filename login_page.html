@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+
+
+
+
+
+
+<title>Knowledge Pro | Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<!-- CSS -->
+<link rel="stylesheet"
+	href="js/loginPage Design/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="js/loginPage Design/css/form-elements.css">
+<link rel="stylesheet" href="js/loginPage Design/css/style.css">
+<link rel='stylesheet' href="css/auditorium/start/jquery-ui.css" />
+<link rel="stylesheet" href="jquery/Zebra/css/default/zebra_dialog.css" />
+<link rel="stylesheet" href="css/webticker.css" />
+
+<script src="jquery/development-bundle/jquery-1.7.1.js"></script>
+<script type='text/javascript' src="js/auditorium/jquery-ui.min.js"></script>
+<script type='text/javascript'
+	src="jquery/Zebra/javascript/zebra_dialog.js"></script>
+<script type="text/javascript" src="js/jquery.webticker.js"></script>
+<link rel="stylesheet" type="text/css"
+	href="jquery.confirm/jquery.confirm/jquery.confirm.css" />
+<script src="jquery.confirm/jquery.confirm/jquery.confirm.js"></script>
+<style type="text/css">
+img {
+	vertical-align: middle;
+}
+
+#captchaBox {
+	height: 40px;
+	font-size: 14px;
+}
+
+#captchaRefresh {
+	width: 25px;
+	height: 25px;
+	margin: 10px;
+	cursor: pointer;
+}
+
+#captchaImageDiv {
+	height: 50px;
+}
+
+input:-webkit-autofill, input:-webkit-autofill:focus, input:-webkit-autofill:hover
+	{
+	-webkit-box-shadow: 0 0 0 1000px white inset !important;
+}
+
+.btn {
+	width: 25%;
+}
+
+.form-box {
+	background: rgba(0, 0, 0, 0.35) none repeat scroll 0 0;
+	border-radius: 10px;
+	box-shadow: 0 0 2px #aaa;
+	border-image: none;
+}
+
+
+@media only screen and (max-width: 320px) {
+	.btn {
+		width: 15%;
+	}
+}
+
+.header {
+	background: rgba(0, 0, 0, 0)
+		linear-gradient(45deg, rgba(153, 116, 244, 1) 20%,
+		rgba(255, 255, 255, 1) 61%, rgba(255, 255, 255, 1) 71%,
+		rgba(255, 255, 255, 1) 95%) repeat scroll 0 0;
+	width: 100%;
+	height: 100px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 100;
+	opacity: 0.6;
+	max-width: 100%;
+	margin-bottom: 15px;
+	border-color: white;
+	border: 0px solid rgba(0, 0, 0, 0.5);
+	display: table-row;
+}
+
+.ui-dialog .ui-dialog-content {
+	border: 0;
+	padding: .5em 1em;
+	background: white;
+	overflow: auto;
+	zoom: 1;
+	text-align: left;
+	box-shadow: #FFFFFF;
+}
+
+.ui-button.cancelButton {
+	border: 1px solid #aaaaaa color: blue;
+	align-items: center;
+}
+
+.ui-dialog .ui-dialog-titlebar-close {
+	position: absolute;
+	right: 0;
+	align-items: center;
+}
+
+.ui-buttons {
+	position: absolute;
+	left: 0;
+	align-items: left;
+}
+#maintitle{
+font-family: verdan;
+}
+#subTitle{
+font-family: verdan;
+font: bolder;
+}
+.wrapper{
+	background-repeat:no-repeat;
+	background-position:center;
+	background-attachment:fixed;
+	background-size:cover;
+	z-index: 2;
+}
+#slideshow {
+    position:relative;
+	z-index:-1;
+}
+
+#slideshow IMG {
+    position:absolute;
+    top:0;
+    left:0;
+    z-index:8;
+    opacity:0.0;
+}
+
+#slideshow IMG.active {
+    z-index:10;
+    opacity:1.0;
+}
+
+#slideshow IMG.last-active {
+    z-index:9;
+}
+
+#slideshow img {
+	/* Set rules to fill background */
+	min-height: 100%;
+	min-width: 1024px;
+			
+	/* Set up proportionate scaling */
+	width: 100%;
+	height: 100%;
+			
+	/* Set up positioning */
+	position: fixed;
+	top: 0;
+	left: 0;
+}
+		
+@media screen and (max-width: 1024px){
+	img.bg {
+	left: 50%;
+	margin-left: -512px; 
+}
+}
+		
+#page-wrap { 
+	position: relative;
+	width: 400px; 
+	margin: 50px auto; 
+	padding: 20px; 
+	background: #fff; 
+	-moz-box-shadow: 0 0 20px black; 
+	-webkit-box-shadow: 0 0 20px black; 
+	box-shadow: 0 0 20px black; 
+}
+
+p { 
+	font: 15px/2 Arial; 
+	margin: 0 0 30px 0; 
+	color: #fff;
+}
+
+#content {
+	width: 920px;
+	margin: 0 auto;
+	background: rgba(11,11,11, 0.5);
+	padding: 20px;
+}
+
+#content h1 {
+	text-transform: uppercase;
+	font-family: 'Arial';
+	color: #fff;
+}
+
+#content a {
+	color: #a82711;
+	font-weight: bold;
+	text-transform: uppercase;
+	background: #000;
+	padding: 10px;
+}
+.dot {
+  cursor: pointer;
+  height: 15px;
+  width: 15px;
+  margin: 0 2px;
+  border-radius: 50%;
+  display: inline-block;
+  
+}
+</style>
+</head>
+<body onload="resetFieldAndErrMsgs()" class="wrapper">
+	<div class="header" align="left">
+		&nbsp;&nbsp;&nbsp;&nbsp;<a 
+			style="color: white; line-height: 100px; text-align: left;"
+			class="btn-link" onclick="contactUs()"><b>Contact Us</b></a> <img
+			src='images/Logos/Topbar.jpg' alt="Logo not available"
+			class="img-responsive" width="200" height="90" align="right">
+	</div>
+
+	<form name="loginform" method="post" action="/KnowledgePro/StudentLoginAction.do">
+		<input type="hidden" name="method" value="" id="method">
+		<input type="hidden" name="formName" value="loginform">
+		<input type="hidden" name="pageType" value="1">
+		<input type="hidden" name="serverDownMessage" value="" id="serverDownMessage">
+		<input type="hidden" name="attempt" value="0" id="attempt">
+		<input type="hidden" name="rawDataFromUser" value="" id="rawDataFromUser">
+		<input type="hidden" name="tempCaptchaImgPath" value="" id="tempCaptchaImgPath">
+		<input type="hidden" name="isSessionExistsInSameBrowser" value="" id="isSessionExistsInSameBrowser">
+		<input type="hidden" name="makeNewSession" value="" id="makeNewSession">
+		<input type="hidden" name="loginSliderImgs" value="1.jpg,3.jpg,4.jpg,5.jpg" id="loginSliderImgs">
+		<input type="hidden" name="loginSliderImgSize" value="4" id="loginSliderImgSize">
+		<script>var redirectPath='/KnowledgePro';</script>
+		<!-- Data Collection for Student Starts -->
+		<div id="dataCollection">
+
+			<table width="100%" cellspacing="1"
+				class="table table-striped table-bordered table-condensed">
+				<tr background="white" style="background-color: white;"
+					bgcolor="white" bordercolor="white" align="center">
+					<td background="white"
+						style="background-color: white; border-color: white;"
+						bgcolor="white" bordercolor="white">
+						 
+					</td>
+				</tr>
+			</table>
+		</div>
+		<!-- Data Collection for Student Ends -->
+		<!-- Top content -->
+		<div style="display: none;" id="contactUsDialog">
+			<table>
+				<tr>
+				    <td style="width: 500px"><table width="250" border="1" align="left" cellpadding="5" cellspacing="0" bordercolor="#CCCCCC" class="tab" style="width: 300px; height: 114px">
+				      <tr>
+				        <td valign="top" style="width: 246px; height: 91px"><table width="100%" border="0" cellspacing="4" cellpadding="5">
+				         <tr>
+				         <td>&nbsp;</td><td>&nbsp;</td>
+						  
+						   
+						          <tr>
+								<td width="40"><img src="../images/emailimg.gif" width="24" height="17"></td>          
+						            <td align="left"><span class="style2">
+						            <a href="mailto:support@christuniversity.in">support@christuniversity.in</a>
+						          </tr>
+						         <!--  <tr>
+						          <td width="40"><img src="../images/Phone.gif" width="24" height="20"></td> 
+						            <td align="left"><span class="style2">&nbsp;080-4012-9495</span></td>
+						          </tr> -->
+						   
+						   
+				          <tr>
+				          <td>&nbsp;</td>
+				          
+				        </table></td>
+				      </tr>
+				    </table>
+			     </td>
+			   </tr>
+		    </table>
+		</div>
+		<div class="top-content">
+			<div class="inner-bg">
+				<div class="container">
+					<div class="row">
+						<div class="col-sm-6 col-sm-offset-3 form-box">
+							<div>
+								<H3 style="color: white;">Welcome Christite !</H3>
+							</div>
+							<div style="height: 24px;">
+								<table>
+									<tr>
+										<td>
+											<div id="errorMessage" align="center"
+												style="color: red; font-size: 17px;">
+												<FONT color="red"></FONT> <FONT
+													color="green"> 
+												</FONT>
+											</div>
+										</td>
+									</tr>
+								</table>
+							</div>
+							<div>
+								<div class="login-form" style="line-height: 70px;">
+									<div class="form-group">
+										<label class="sr-only" for="form-username">Username</label>
+										<input type="text" name="userName" maxlength="50" size="20" value="" id="username" style="background: #eee ;" class="form-username form-control">
+									</div>
+									<div class="form-group">
+										<label class="sr-only" for="form-password">Password</label>
+										<input type="password" name="password" maxlength="200" size="20" value="" id="password" style="background: #eee ;" class="form-password form-control">
+									</div>
+									
+									<div align='left' id="captchaImageDiv" class="form-group">
+										<img src="TempFiles//Captcha//3d4e10d8f0d0919b79b02379075f6d37.png" id="captcha_img"><img
+											src="images/LoginImages/captchaRefresh.png"
+											id="captchaRefresh">
+									</div>
+									<div align="left" id="captchaBoxDiv" class="form-group">
+										<input type="text" name="enteredCaptcha" maxlength="50" size="10" value="" id="captchaBox" class="form-control">
+									</div>
+									
+
+									<div>
+										<table width="100%">
+											<tr>
+
+												<td align="left" width="50%" class="forgetpassword">
+													 <p onclick="forgotPassowrd()"
+													class="btn-link"
+													style="font-size: 14px; font-weight: bold; color: white;">
+														<b>Forgot Password</b>
+												</p>
+												</td>
+												<td align="right" width="50%">
+													<button type="submit" class="btn"
+														style="padding: 0 70px 0 30px; background: #ff6600; text-align: center;"
+														id="Login">
+														<b>Login</b>
+													</button>
+												</td>
+											</tr>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div><br></br>
+				<!-- Added by Ashwini N Kandgal -->
+				<div id="dotSpanId">
+				
+				
+					
+						
+					
+						
+					
+						
+					
+						
+					
+				
+				
+				<span class="dot" id="dotId_1" onclick="currentSlide(1)"></span>
+			
+				<span class="dot" id="dotId_2" onclick="currentSlide(2)"></span>
+			
+				<span class="dot" id="dotId_3" onclick="currentSlide(3)"></span>
+			
+				<span class="dot" id="dotId_4" onclick="currentSlide(4)"></span>
+			</div>
+				
+				<!--<div class="col-sm-9 text" align="left"><h1><strong>Chri-Spo-Fest 2015</strong></h1>
+<h2><strong>Inauguration on </strong><strong>08 September 2015</strong></h2>
+<h3><strong><strong>Organised by Department of Physical Education.</strong></strong></h3>
+<p><strong><strong>Organised by</strong></strong></p>
+<p>&nbsp;</p></div>
+		-->
+				<div class="col-sm-12 text" align="left"></div>
+			</div>
+		</div>
+		<!--<br></br>
+		       <div class="container">
+            <div id="NewsAndEvnets" class="col-sm-5" align="center">
+		<table width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td>
+							 
+							  <ul >
+							  <li >
+										  <iframe src="http://www.christuniversity.in/scrollnews.php"    width=880  marginwidth=0 
+										   		marginheight=0 frameborder=0  scrolling=no style="font-family: Verdana, Arial, Helvetica, sans-serif;font-size: 12px;font-weight: bold; color: white;">
+										   	</iframe>
+								</li>
+								</ul>		   	
+									  
+		 		</td>
+		</tr>
+		</table>
+	</div>
+	</div>
+-->
+
+<div style="display:none;" id=collectionPopup>
+  <div class="section">
+    <p><font color="black">
+      <strong>CHRIST (Deemed to be University)</strong> is extending the provision of a fourth-year 
+      <strong>Honours</strong> and <strong>Honours with Research</strong> option across various 
+      undergraduate disciplines starting from the academic year <strong>2026-27</strong>, in alignment with the 
+      <strong>National Education Policy (NEP) 2020</strong>.
+   </font> </p>
+  </div>
+
+  <div class="section">
+    <h3>Eligibility Criteria:</h3>
+    <ul>
+      <li><strong>Honours:</strong> Minimum <strong>60%</strong> aggregate in completed semesters with <strong>no backlogs</strong> at the time of application.</li>
+      <li><strong>Honours with Research:</strong> Minimum <strong>75%</strong> aggregate in completed semesters with <strong>no backlogs</strong> at the time of application.</li>
+      <li>Students enrolled in <strong>double major programmes</strong> can choose either discipline for their Honours track.</li>
+      <li>A minimum of <strong>30 eligible and interested students per discipline</strong> is required for the programme to be offered.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>Important Points to Note:</h3>
+    <ul>
+      <li>Students opting for the <strong>fourth-year programme</strong> will <strong>not be eligible</strong> for <strong>third-year campus placements</strong>.</li>
+      <li><strong>Fee details</strong> for the fourth year will be announced after survey analysis.</li>
+      <li>The <strong>Campus</strong> in which the Honours and Honours with Research programmes will be offered will be decided by the University, based on the <strong>faculty</strong> and <strong>infrastructure availability</strong>.</li>
+    </ul>
+  </div>
+<!-- Summary:
+CHRIST (Deemed to be University) wishes to extend the provision of a fourth-year Honours and Honours with Research option across various undergraduate disciplines from the academic year 2026–27, in line with the National Education Policy (NEP) 2020. 
+Eligibility Criteria:
+
+Honours: Minimum 60% aggregate in the  completed semesters with no backlogs at the time of application.
+Honours with Research: Minimum 75% aggregate in the  completed semesters with no backlogs at the time of application.
+Students enrolled in double major programmes can choose either discipline for their Honours track. A minimum of 30 eligible and interested students per discipline is required for the programme to be offered.
+
+Important Points to Note:
+<li>
+ <ul>Students opting for the fourth-year programme will not be eligible for third-year campus placements.</ul>
+<ul>Fee details for the fourth year will be announced after survey analysis.</ul>
+</li>
+The Campus in which the Honours and Honours with Research programmes will be offered will be decided by the University, based on the faculty and infrastructure available. -->
+</div>
+<!-- Added by Ashwini N Kandgal -->
+
+			<div id="slideshow">
+			<span>
+			
+				
+					
+					   
+						<img  alt="Slideshow Image 1" id="imgId_0" class="active" src="images/LoginImages/AdminLoginImages/1.jpg?1769583048583">
+					
+				
+					
+					
+						<img  alt="Slideshow Image 1" id="imgId_1"  src="images/LoginImages/AdminLoginImages/3.jpg?1769583048583">
+						
+				
+					
+					
+						<img  alt="Slideshow Image 1" id="imgId_2"  src="images/LoginImages/AdminLoginImages/4.jpg?1769583048583">
+						
+				
+					
+					
+						<img  alt="Slideshow Image 1" id="imgId_3"  src="images/LoginImages/AdminLoginImages/5.jpg?1769583048583">
+						
+				
+				
+			</span>
+			</div>
+	</form>
+</body>
+<script src="js/studentlogin/studentLoginPageNew1.js?version=1.1700"></script>
+<script>
+function collectionPopup() {
+	$( "#collectionPopup").dialog({
+		resizable: false,
+        modal: true,
+        height: 800,
+        title: "Eligibility Criteria",
+        width: 750,
+        close: function() {
+	    	$("#collectionPopup").dialog("destroy");
+      	},
+        buttons:{
+        	Close:function(){
+        		$("#collectionPopup").dialog("destroy");
+        		
+        	}
+        }
+      	
+	}); 
+	
+}
+</script>
+</html>
+
+
