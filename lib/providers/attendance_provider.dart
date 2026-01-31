@@ -12,6 +12,7 @@ class AttendanceProvider with ChangeNotifier {
 
   List<SubjectStats> _subjects = [];
   bool _isLoading = false;
+  bool _isAuthChecking = true; // New state
   String? _error;
   bool _isLoggedIn = false;
   Map<String, String>? _sessionHeaders;
@@ -23,9 +24,14 @@ class AttendanceProvider with ChangeNotifier {
 
   List<SubjectStats> get subjects => _subjects;
   bool get isLoading => _isLoading;
+  bool get isAuthChecking => _isAuthChecking;
   String? get error => _error;
   bool get isLoggedIn => _isLoggedIn;
   Uint8List? get captchaImage => _captchaImage;
+
+  AttendanceProvider() {
+    checkSession(); // Auto-check on create
+  }
 
   // Initialize Login Page (Get Captcha)
   Future<void> initLogin() async {
@@ -77,7 +83,11 @@ class AttendanceProvider with ChangeNotifier {
   }
 
   Future<void> checkSession() async {
-    _setLoading(true);
+    // Don't set _isLoading here to avoid UI flicker, just internal check
+    // or use _isAuthChecking
+    _isAuthChecking = true;
+    notifyListeners();
+
     try {
       final String? cookie = await _storage.read(key: 'session_cookie');
       if (cookie != null) {
@@ -100,7 +110,9 @@ class AttendanceProvider with ChangeNotifier {
     } catch (e) {
       await initLogin(); // Fallback
     } finally {
-      _setLoading(false);
+      _isAuthChecking = false;
+      _isLoading = false; // Ensure loading off
+      notifyListeners();
     }
   }
 
@@ -141,11 +153,30 @@ class AttendanceProvider with ChangeNotifier {
       }
       _subjects = statsMap.values.toList();
       _subjects.sort((a, b) => a.code.compareTo(b.code));
+
+      // Load saved name if any
+      final String? savedName = await _storage.read(key: 'student_name');
+      if (savedName != null && savedName.isNotEmpty) {
+        _studentName = savedName;
+      } else if (_studentName != "Student") {
+        // Save scraped name if valid
+        await _storage.write(key: 'student_name', value: _studentName);
+      }
     } catch (e) {
       _error = "Failed to fetch data: ${e.toString()}";
+
+      // Try load cached name even on error
+      final String? savedName = await _storage.read(key: 'student_name');
+      if (savedName != null) _studentName = savedName;
     } finally {
       _setLoading(false);
     }
+  }
+
+  Future<void> updateName(String newName) async {
+    _studentName = newName;
+    await _storage.write(key: 'student_name', value: newName);
+    notifyListeners();
   }
 
   void logout() {

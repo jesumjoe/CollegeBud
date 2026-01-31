@@ -19,6 +19,8 @@ class AttendanceRepository {
         LoginService.parseCookieToMap(initialCookieHeader);
 
     try {
+      print(
+          'DEBUG: AttendanceRepository v3 - Robust Duty Leave Check'); // Force update
       final Map<String, String> headers = {
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
@@ -39,6 +41,8 @@ class AttendanceRepository {
         final homeResponse =
             await client.get(Uri.parse(_homeUrl), headers: headers);
         if (homeResponse.statusCode == 200) {
+          print(
+              "DEBUG: Home Page HTML (First 500 chars): ${homeResponse.body.substring(0, homeResponse.body.length > 500 ? 500 : homeResponse.body.length)}");
           // Update cookies if any
           if (homeResponse.headers['set-cookie'] != null) {
             cookieJar.addAll(LoginService.parseCookieToMap(
@@ -78,17 +82,34 @@ class AttendanceRepository {
             }
           }
 
-          // Strategy 3: Regex on full HTML (in case parser strips something odd)
+          // Strategy 3: Regex on full HTML
           if (studentName == "Student" || studentName.isEmpty) {
             final htmlContent = homeResponse.body;
-            // Look for <b>Name :</b> <span class="name">NAME</span>
-            final regex = RegExp(
-                r'Name\s*:\s*<\/b>\s*<span[^>]*>([^<]+)<\/span>',
+            // 1. Look for bold Name tag: <b>Name :</b> ...
+            var regex = RegExp(r'Name\s*:\s*<\/b>\s*<span[^>]*>([^<]+)<\/span>',
                 caseSensitive: false);
-            final match = regex.firstMatch(htmlContent);
-            if (match != null) {
+            var match = regex.firstMatch(htmlContent);
+
+            // 2. Look for "Name : " in general text
+            if (match == null) {
+              regex =
+                  RegExp(r'Name\s*:\s*([A-Za-z\s\.]+)', caseSensitive: false);
+              // We need to be careful not to match "Name : Subject Name" etc.
+              // So maybe look for something that is NOT "Subject" or "Total"
+              final matches = regex.allMatches(homeDoc.body?.text ?? "");
+              for (var m in matches) {
+                final val = m.group(1)?.trim() ?? "";
+                if (val.isNotEmpty &&
+                    !val.toLowerCase().contains("subject") &&
+                    val.length > 3) {
+                  studentName = val;
+                  print('DEBUG: Found Name via General Regex: $studentName');
+                  break;
+                }
+              }
+            } else {
               studentName = match.group(1)?.trim() ?? "Student";
-              print('DEBUG: Found Name via Regex on HTML: $studentName');
+              print('DEBUG: Found Name via HTML Regex: $studentName');
             }
           }
 
@@ -122,13 +143,61 @@ class AttendanceRepository {
       print(
           'DEBUG: Summary Page Fetched. Body Length: ${summaryResponse.body.length}');
 
-      // Fallback Name Parsing from Summary if Home failed?
+      // Fallback Name Parsing from Summary Tables
+      if (studentName == "Student") {
+        // Strategy 4: Inspect first few tables for "Name" key
+        final summaryTables = summaryDocument.querySelectorAll('table');
+        for (var i = 0; i < summaryTables.length && i < 5; i++) {
+          final rows = summaryTables[i].querySelectorAll('tr');
+          for (var row in rows) {
+            final cells = row.querySelectorAll('td');
+            for (var j = 0; j < cells.length; j++) {
+              final text = cells[j].text.trim().toLowerCase();
+              if (text == 'name' || text == 'student name') {
+                // Check next cell
+                if (j + 1 < cells.length) {
+                  final val = cells[j + 1].text.trim();
+                  if (val.isNotEmpty && val.length > 2) {
+                    studentName = val;
+                    print(
+                        "DEBUG: Found Name in Summary Table $i: $studentName");
+                    break;
+                  }
+                }
+              }
+              // Sometimes content is "Name : [Actual Name]" in one cell
+              if (text.startsWith('name') && text.contains(':')) {
+                final parts = text.split(':');
+                if (parts.length > 1) {
+                  final val = parts[1].trim();
+                  if (val.isNotEmpty && val.length > 2) {
+                    studentName = val;
+                    print(
+                        "DEBUG: Found Name via Cell Split in Summary Table $i: $studentName");
+                    break;
+                  }
+                }
+              }
+            }
+            if (studentName != "Student") break;
+          }
+          if (studentName != "Student") break;
+        }
+      }
+
+      // Fallback Name Parsing from Summary if Home failed? (Regex based)
       if (studentName == "Student") {
         final bodyText = summaryDocument.body?.text ?? "";
+        // Look for "Name : [Name]" allowing for potential newlines or tabs
         final nameMatch =
-            RegExp(r'Name\s*:\s*([A-Za-z\s\.]+)').firstMatch(bodyText);
+            RegExp(r'Name\s*[:|-]\s*([A-Za-z\s\.]{3,50})').firstMatch(bodyText);
         if (nameMatch != null) {
-          studentName = nameMatch.group(1)?.trim() ?? "Student";
+          final candidate = nameMatch.group(1)?.trim();
+          if (candidate != null &&
+              !candidate.toLowerCase().contains("subject")) {
+            studentName = candidate;
+            print('DEBUG: Found Name via Summary Fallback: $studentName');
+          }
         }
       }
 
@@ -160,110 +229,48 @@ class AttendanceRepository {
   Map<String, SubjectStats> _parseSummary(String htmlBody) {
     final document = parser.parse(htmlBody);
     final Map<String, SubjectStats> map = {};
-
-    Element? targetTable;
-    final tables = document.querySelectorAll('table');
-    print('DEBUG: Found ${tables.length} tables in Summary Page.');
-
-    // Heuristics to find the main outer table
-    for (var table in tables) {
-      if (table.className.contains('table-striped')) {
-        targetTable = table;
-        print('DEBUG: Found Summary Table via class name.');
-        break;
-      }
-    }
-
-    if (targetTable == null) {
-      for (var table in tables) {
-        // Check for 'Subject Name' in th/td
-        if (table.innerHtml.toLowerCase().contains('subject name')) {
-          // Ensure it's not just a wrapper by checking if it contains nested tables?
-          // Actually, the outer table DOES contain nested tables.
-          // We prefer the one that has 'Subject Name' in its direct header if possible.
-          if (table.querySelectorAll('tr').length > 1) {
-            // Basic sanity check
-            targetTable = table;
-            // Keep looking? No, break on first good candidate usually safest here
-            break;
-          }
-        }
-      }
-    }
-
-    if (targetTable == null) {
-      print('ERROR: Summary Table NOT found!');
-      return {};
-    }
-
-    // STRICT ROW ITERATION
-    // Do NOT use querySelectorAll('tr') on the table, as it returns nested TRs too.
-    // We must manually iterate children.
-    List<Element> rows = [];
-    for (var child in targetTable.children) {
-      if (child.localName == 'tbody') {
-        rows.addAll(child.children.where((c) => c.localName == 'tr'));
-      } else if (child.localName == 'tr') {
-        rows.add(child);
-      }
-    }
-
-    print('DEBUG: Found ${rows.length} Outer Rows.');
+    final form =
+        document.querySelector('form[name="studentWiseAttendanceSummaryForm"]');
+    final rows = form?.querySelectorAll('tr') ?? [];
 
     for (var row in rows) {
       final cells = row.children;
-      // Outer Row Structure: [Sl.No, Subject Name, DataWrapper(NestedTable)]
-      // Some rows might be headers or empty, we need at least 3 cells usually.
       if (cells.length < 3) continue;
 
-      final subjectName = cells[1].text.trim();
+      String slNo = cells[0].text.trim().replaceAll('.', '');
+      if (!RegExp(r'^\d+$').hasMatch(slNo)) continue;
 
-      // Filter Garbage Rows
-      if (subjectName.isEmpty ||
-          subjectName.toLowerCase().contains('subject name') ||
-          subjectName.toLowerCase().startsWith('total')) continue;
+      String rawName = cells[1].text.trim().replaceAll(RegExp(r'\s+'), ' ');
+      if (rawName.toLowerCase() == 'total') continue;
 
-      // Inner Table Logic (Nested in 3rd cell usually, index 2)
-      // Sometimes it's a div wrapping the table, or just the table.
-      final innerTable = cells[2].querySelector('table');
-      double totalConducted = 0;
-      double totalAbsent = 0;
+      double cond = 0, abs = 0;
+      bool found = false;
 
-      if (innerTable != null) {
-        // Inner rows: Here we can use querySelectorAll('tr') safely as we are scoped
-        // to this specific subject, assuming no deeper nesting.
-        final innerRows = innerTable.querySelectorAll('tr');
-
-        for (var innerRow in innerRows) {
-          final innerCells = innerRow.children;
-          // Inner Row Expected Structure:
-          // [Type(Theory/Prac), Conducted, Present, Absent, %]
-          // e.g. [Theory, 24.0, 20.0, 4.0, 83.33]
-
-          if (innerCells.length >= 4) {
-            final type = innerCells[0].text.trim().toLowerCase();
-            if (type.contains('attendance type')) continue; // Skip inner header
-
-            // Index 1: Conducted
-            final conductedStr = innerCells[1].text.trim();
-            totalConducted += double.tryParse(conductedStr) ?? 0;
-
-            // Index 3: Absent (Verified from user screenshot, column 4)
-            final absentStr = innerCells[3].text.trim();
-            totalAbsent += double.tryParse(absentStr) ?? 0;
+      final inner = cells[2].querySelector('table');
+      if (inner != null) {
+        for (var iRow in inner.querySelectorAll('tr')) {
+          final iCells = iRow.querySelectorAll('td');
+          if (iCells.length >= 5) {
+            double? c = double.tryParse(iCells[1].text.trim());
+            double? a = double.tryParse(iCells[3].text.trim());
+            if (c != null && a != null) {
+              cond += c;
+              abs += a;
+              found = true;
+            }
           }
         }
       }
 
-      print(
-          'DEBUG: Parsed "$subjectName" -> Conducted: $totalConducted, Absent: $totalAbsent');
-
-      map[subjectName] = SubjectStats(
-          code: "UNKNOWN", // Will be updated in Details phase
-          name: subjectName,
-          totalHours: totalConducted.toInt(),
-          blueAbsents: totalAbsent.toInt(), // Using correct summary data
-          greenDutyLeaves: 0);
+      if (found) {
+        map[rawName] = SubjectStats(
+          code: "UNMAPPED",
+          name: rawName,
+          totalHours: cond.toInt(),
+          blueAbsents: abs.toInt(),
+          greenDutyLeaves: 0,
+        );
+      }
     }
     return map;
   }
@@ -272,132 +279,198 @@ class AttendanceRepository {
       String htmlBody, Map<String, SubjectStats> statsMap) {
     final document = parser.parse(htmlBody);
     final tables = document.querySelectorAll('table');
-    print('DEBUG: Found ${tables.length} tables in Details Page.');
 
-    // 1. Mapping Table Logic
-    Element? mappingTable;
-    int bestMatchCount = 0;
+    print('DEBUG: Details Logic v3 - Legend Based Mapping & Cell Iteration');
 
-    for (var i = 0; i < tables.length; i++) {
-      final text = tables[i].text;
-      int matchCount = 0;
-      for (var name in statsMap.keys) {
-        if (text.contains(name)) matchCount++;
-      }
-      if (matchCount > bestMatchCount) {
-        bestMatchCount = matchCount;
-        mappingTable = tables[i];
-      }
-    }
+    // --- PHASE 1: Build robust Name -> Code Map from the Legend Table ---
+    final Map<String, String> nameToCodeMap = {};
 
-    if (mappingTable != null && bestMatchCount > 0) {
-      final cells = mappingTable.querySelectorAll('td');
-      Map<String, String> nameToCode = {};
+    for (var table in tables) {
+      // Heuristic: Legend table has no big headers, just cells with "Name (Code)"
+      final cells = table.querySelectorAll('td');
       for (var cell in cells) {
-        final text = cell.text.trim().replaceAll(RegExp(r'\s+'), ' ');
-        final match = RegExp(r'(.+?)\s*\((.+?)\)').firstMatch(text);
+        final text = cell.text.trim();
+        // Regex: Matches "Subject Name (SUBJECTCODE)"
+        final match = RegExp(r'(.+?)\s*\((.+?)\)$').firstMatch(text);
         if (match != null) {
-          String name = match.group(1)?.trim() ?? '';
-          String code = match.group(2)?.trim() ?? '';
-          if (name.isNotEmpty && code.isNotEmpty && code.length < 20) {
-            nameToCode[name] = code;
+          String rawName = match.group(1)!.trim();
+          String rawCode = match.group(2)!.trim();
+
+          // Normalize Key: lowercase, remove spaces/punctuation for fuzzy matching
+          String normalizedName =
+              rawName.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+
+          if (normalizedName.isNotEmpty && rawCode.isNotEmpty) {
+            nameToCodeMap[normalizedName] = rawCode;
           }
         }
       }
+    }
 
-      nameToCode.forEach((rawName, code) {
-        String? key;
-        if (statsMap.containsKey(rawName))
-          key = rawName;
-        else {
-          for (var k in statsMap.keys) {
-            if (rawName.contains(k) || k.contains(rawName)) {
-              key = k;
+    print(
+        'DEBUG: Constructed Legend Map (${nameToCodeMap.length} entries): $nameToCodeMap');
+
+    // --- PHASE 2: Re-Key the Stats Map to use CODES ---
+    final Map<String, SubjectStats> codeKeyedStats = {};
+    final List<String> unmappedSubjects = [];
+
+    statsMap.forEach((summaryName, stats) {
+      String normSummaryName =
+          summaryName.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+
+      // 1. Try exact normalized match
+      String? matchedCode = nameToCodeMap[normSummaryName];
+
+      // 2. Fallback: Contains match
+      if (matchedCode == null) {
+        for (var legendName in nameToCodeMap.keys) {
+          if (legendName.contains(normSummaryName) ||
+              normSummaryName.contains(legendName)) {
+            if (legendName.length > 5 && normSummaryName.length > 5) {
+              matchedCode = nameToCodeMap[legendName];
               break;
             }
           }
         }
-        if (key != null) {
-          final old = statsMap[key]!;
-          statsMap[code] = SubjectStats(
-              code: code,
-              name: old.name,
-              totalHours: old.totalHours,
-              blueAbsents: old.blueAbsents,
-              greenDutyLeaves: old.greenDutyLeaves);
-          statsMap.remove(key);
-          print('DEBUG: Mapped "$rawName" -> "$code"');
-        }
-      });
-    }
-
-    // 2. Duty Leave Parsing
-    Element? detailsTable;
-    for (var i = 0; i < tables.length; i++) {
-      final text = tables[i].text.toLowerCase();
-      if (text.contains('date') && text.contains('period')) {
-        // Check nesting to avoid wrapper tables
-        if (tables[i].querySelectorAll('table').isEmpty) {
-          detailsTable = tables[i];
-          break;
-        }
       }
-    }
-    // Fallback
-    if (detailsTable == null) {
-      for (var t in tables) {
-        if (t.text.toLowerCase().contains('date') &&
-            t.text.toLowerCase().contains('period')) {
-          detailsTable = t;
-          break;
-        }
-      }
-    }
 
-    if (detailsTable != null) {
-      final rows = detailsTable.querySelectorAll('tr');
-      for (var i = 1; i < rows.length; i++) {
-        final cells = rows[i].querySelectorAll('td');
-        if (cells.length < 3) continue;
-
-        // Duty Leave (Green) Logic
-        // We only increment greenDutyLeaves here.
-        // We DO NOT touch blueAbsents as that comes from Summary.
-
-        String rowStyle = rows[i].attributes['style']?.toLowerCase() ?? '';
-
-        // Iterate periods (skip first 2 columns: Date, Day)
-        for (var j = 2; j < cells.length - 1; j++) {
-          final cell = cells[j];
-          final text = cell.text.trim();
-
-          if (text.isEmpty || text == '-') continue;
-
-          final code = text;
-          bool isGreen = false;
-
-          String style = cell.attributes['style']?.toLowerCase() ?? '';
-          final spans = cell.querySelectorAll('span, font');
-          for (var s in spans) {
-            style += s.attributes['style']?.toLowerCase() ?? '';
-            style += s.attributes['color']?.toLowerCase() ?? '';
-          }
-
-          if (style.contains('green') ||
-              style.contains('#00ff00') ||
-              text.toLowerCase().contains('duty leave')) {
-            isGreen = true;
-          }
-
-          if (statsMap.containsKey(code)) {
-            if (isGreen) {
-              statsMap[code]!.greenDutyLeaves++;
+      // 3. Fallback: Special cases (like Wireless Networks IOT mismatch)
+      if (matchedCode == null) {
+        if (normSummaryName.contains('wireless') &&
+            normSummaryName.contains('networks')) {
+          for (var entry in nameToCodeMap.entries) {
+            if (entry.value.contains('CSEIOT') || entry.value.contains('IOT')) {
+              matchedCode = entry.value;
             }
           }
         }
       }
-    } else {
-      print('ERROR: Details table not found for Duty Leave.');
+
+      if (matchedCode != null) {
+        codeKeyedStats[matchedCode!] = SubjectStats(
+          code: matchedCode!,
+          name: stats.name,
+          totalHours: stats.totalHours,
+          blueAbsents: stats.blueAbsents,
+          greenDutyLeaves: 0,
+        );
+      } else {
+        print('DEBUG: Create unmapped entry for $summaryName');
+        unmappedSubjects.add(summaryName);
+        codeKeyedStats[summaryName] = stats;
+      }
+    });
+
+    statsMap.clear();
+    statsMap.addAll(codeKeyedStats);
+    print('DEBUG: Re-keyed Stats Map keys: ${statsMap.keys.toList()}');
+
+    // --- PHASE 3: Process Attendance Rows (Using Codes) ---
+    // Note: processedRowHashes and totalProcessedRows variables should be declared if not already,
+    // but in this context they were re-declared.
+    // We will assume they are needed here for the logic block.
+    final Set<String> processedRowHashes = {};
+    int totalProcessedRows = 0;
+
+    // We only want the FIRST table with class 'table-striped table-bordered table-condensed'
+    // or similar structure. The summary tables are often at the bottom.
+    // Heuristic: The main table usually has the most rows. Or index 0 of specific class.
+
+    Element? mainTable;
+    for (var table in tables) {
+      if (table.classes.contains('table-striped') &&
+          table.classes.contains('table-bordered') &&
+          table.classes.contains('table-condensed') &&
+          table.querySelector('th')?.text.toLowerCase().contains('date') ==
+              true) {
+        mainTable = table;
+        break;
+      }
     }
+    // Fallback: Use the previous heuristic if specific classes aren't consistent
+    if (mainTable == null) {
+      for (var table in tables) {
+        if (table.text.toLowerCase().contains('date') &&
+            table.text.toLowerCase().contains('period')) {
+          mainTable = table;
+          break;
+        }
+      }
+    }
+
+    if (mainTable != null) {
+      final rows = mainTable.querySelectorAll('tr');
+      // Skip header row (index 0 usually)
+      for (int i = 1; i < rows.length; i++) {
+        final row = rows[i];
+        final cells = row.querySelectorAll('td');
+
+        // Basic validation: Main table rows usually have ~10 columns (Date, Day, P1-7, Total)
+        if (cells.length < 9) continue;
+
+        // Deduplication
+        String rowHash = row.text.replaceAll(RegExp(r'\s+'), '').trim();
+        if (processedRowHashes.contains(rowHash)) continue;
+        processedRowHashes.add(rowHash);
+        totalProcessedRows++;
+
+        String rowText = row.text.replaceAll(RegExp(r'\s+'), ' ').trim();
+
+        // Check Periods 1 to 7 (Indices 2 to 8)
+        // Ensure index is within bounds
+        int loopEnd = (cells.length >= 9)
+            ? 9
+            : cells.length; // usually 2 to 8 inclusive = 7 periods
+
+        for (int p = 2; p < loopEnd; p++) {
+          final cell = cells[p];
+          final text = cell.text.trim();
+
+          if (text.isEmpty) continue; // Present (empty cell)
+
+          // If text is not empty, it's either Absent or Duty Leave
+          // Map text to Subject Code
+          String? subjectCode;
+          if (statsMap.containsKey(text)) {
+            subjectCode = text;
+          } else {
+            // Try to find if this matches any code in our map (maybe unmapped)
+            // This relies on the text being the CODE itself, which it usually is in details
+          }
+
+          if (subjectCode != null) {
+            // Check for Green Font Tag specifically as per user instruction
+            bool isOD = false;
+            final fontTag = cell.querySelector('font');
+            if (fontTag != null) {
+              final color = fontTag.attributes['color']?.toLowerCase() ?? '';
+              if (color == 'green') isOD = true;
+            }
+            // Also check style attribute as backup
+            if (!isOD) {
+              final style = (cell.attributes['style'] ?? '') +
+                  (fontTag?.attributes['style'] ?? '');
+              if (style.toLowerCase().contains('green')) isOD = true;
+            }
+
+            if (isOD) {
+              statsMap[subjectCode]!.greenDutyLeaves++;
+              print(
+                  'DEBUG: Found DUTY LEAVE for $subjectCode (Col $p) | Row: $rowText');
+            } else {
+              // It's a regular absent.
+              // We don't need to increment 'blueAbsents' because that comes from the Summary page
+              // which is the "source of truth" for total absents.
+              // However, validation: If summary says X absents, we expect X non-green cells here.
+            }
+          }
+        }
+      }
+    }
+
+    print("DEBUG: Total Details Rows Processed: $totalProcessedRows");
+
+    // Final cleanup: If we have unmapped subjects that never found a matching code in details,
+    // they remain as is.
   }
 }

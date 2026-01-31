@@ -1,0 +1,2554 @@
+<html lang="en">
+
+<head>
+    <script src="js/layout/studentLayoutNew.js" type="text/javascript"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Knowledge Pro</title>
+    <link rel="stylesheet" href="js/newDesignPlugin/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="js/newDesignPlugin/css/base.css" type="text/css">
+    <link rel="stylesheet" href="js/newDesignPlugin/css/menustyle1.css" type="text/css">
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <script type="text/javascript" src="js/newDesignPlugin/js/jquery-1.10.1.min.js"></script>
+    <script type="text/javascript" src="js/newDesignPlugin/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/newDesignPlugin/js/script.js"></script>
+    <script type="text/javascript" src="js/ajax/Ajax.js"></script>
+    <script type="text/javascript" src="js/ajax/AjaxUtil.js"></script>
+    <style type="text/css">
+        .cotbox {
+            width: 100%;
+            float: left;
+            margin-top: 130px;
+            overflow: auto;
+        }
+    </style>
+    <link rel="stylesheet" type="text/css" href="jquery.confirm/jquery.confirm/jquery.confirm.css">
+    <script type="text/javascript" src="jquery.confirm/jquery.confirm/jquery.confirm.js"></script>
+    <style type="text/css">
+        .home {
+            cursor: pointer;
+            color: #183883;
+            font-size: 18px;
+            margin: 0;
+            padding: 0 30px;
+        }
+
+        .home:hover {
+            cursor: pointer;
+            font-size: 18px;
+            margin: 0;
+            padding: 0 30px;
+            color: #f55e15;
+        }
+
+        .header {
+            background: #fff;
+            width: 100%;
+            height: 130px;
+            top: 0;
+            left: 0;
+            border-bottom: 3px solid #001b3a;
+            z-index: 100;
+            position: fixed;
+        }
+
+        ul.nav ul {
+            box-shadow: 0 0 3px #333;
+            display: none;
+            height: auto;
+            margin: 0;
+            min-width: 190px;
+            padding: 0;
+            position: absolute;
+            z-index: 9999;
+        }
+    </style>
+    <style type="text/css" id="mytempCss">
+        ._8mqQwQ {
+            display: none;
+        }
+
+        ._1TWLMK.icF5zO {
+            opacity: 0.01;
+        }
+    </style>
+</head>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<body data-new-gr-c-s-check-loaded="14.1271.0" data-gr-ext-installed="" style="">
+    <div class="fixed1">
+        <div class="header">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-3 logo">
+                        <a href="StudentLoginNewAction.do?method=returnHomePage">
+
+                            <img src="images/LoginImages/Logo.jpg" alt="Logo not available" class="img-responsive">
+                        </a>
+                    </div><a href="StudentLoginNewAction.do?method=returnHomePage">
+                        <div class="col-md-5">
+                        </div>
+                    </a>
+                    <div class="col-md-3" style="font-size: 14px;font-weight: bold;" align="right"><a
+                            href="StudentLoginNewAction.do?method=returnHomePage">
+
+                            Welcome&nbsp;: &nbsp;<strong>2361018 </strong>
+                            &nbsp;&nbsp;
+
+
+
+                        </a><a class="btn-link" style="font-size: 14px;font-weight: bold;"
+                            href="StudentLoginAction.do?method=studentLogoutAction">Sign out</a>
+
+
+                    </div>
+
+
+                    <div class="col-xs-9">
+                        <div class="topfull2">
+                            <div class="menubox">
+                                <a class="toggleMenu" href="#" style="display: none;"><img
+                                        src="images/icon-nav.jpg"></a>
+                                <ul class="nav NormalMenu">
+                                    <li onclick="Home()" class="home" style="">Home</li>
+
+
+
+                                    <li class="test" id="att"> <a href="#" class="parent">Attendance </a>
+                                        <ul>
+                                            <li>
+
+
+
+                                                <a id="attendanceNonCJC" href="javascript:void(0);">
+                                                    Attendance </a>
+
+
+
+                                            </li>
+                                            <li></li>
+
+                                            <li>
+
+                                            </li>
+
+                                            <li>
+                                                <!-- <a
+				href="studentWiseAttendanceSummary.do?method=getStudentAbscentWithCocularLeave">Absence Details </a> -->
+                                                <a id="absenceDetailsId" href="javascript:void(0);">Absence Details </a>
+                                            </li>
+                                            <li>
+
+
+
+                                                <a
+                                                    href="studentWiseAttendanceSummary.do?method=initPreviousStudentAttendanceSummeryChrist">Previous
+                                                    Class Attendance</a>
+
+
+                                            </li>
+                                            <li></li>
+                                            <li>
+                                                <a href="viewMyTimeTable1.do?method=initViewStudentTimeTable">View My
+                                                    Time Table</a>
+                                            </li>
+                                            <li>
+
+                                            </li>
+                                            <li>
+
+                                                <a
+                                                    href="StudentLoginNewAction.do?method=getOpenElectiveAttendanceDetails">Open
+                                                    Elective Attendance</a>
+
+                                            </li>
+
+                                            <li>
+                                                <a href="StudentLoginNewAction.do?method=getLibraryAttendanceSummary">Library
+                                                    Attendance&nbsp;
+                                                    <img src="images/supportRequestnew_icon1.png" width="25"
+                                                        id="displayDownloadNew" height="15" class="blinkImage">
+                                                </a>
+                                            </li>
+
+                                        </ul>
+                                    </li>
+
+
+
+
+
+                                    <li class="test"><a href="#" class="parent">Downloads&nbsp;<img
+                                                src="images/supportRequestnew_icon1.png" width="25"
+                                                id="displayDownloadNew" style="display:none;" height="15"
+                                                class="blinkImage"> </a>
+                                        <ul>
+
+
+                                            <li><a href="studentWiseAttendanceSummary.do?method=getInternalMarkDetails">
+                                                    CIA-Mid Sem Result</a></li>
+
+
+                                            <li><a
+                                                    href="studentWiseAttendanceSummary.do?method=getPreviousSemesterInternalMarkDetails">
+                                                    Previous Class CIA-MID Sem Result</a></li>
+
+
+
+
+                                            <li><a
+                                                    href="studentWiseAttendanceSummary.do?method=getStudentLastSemesterClass">
+                                                    End Semester Marks</a></li>
+
+                                            <li>
+                                                <a href="StudentLoginNewAction.do?method=initMarksCard">My Marks
+                                                    Card</a>
+                                            </li>
+
+
+                                            <li>
+
+                                            </li>
+                                            <!-- for multiple ese components marks display by ram -->
+                                            <li>
+                                                <!-- <a href="StudentLoginNewAction.do?method=multipleEseComponentMarksDisplay"></a> -->
+                                                <a href="StudentLoginNewAction.do?method=getStudentLastSemesterClass">ESE
+                                                    Component Marks</a>
+
+
+                                            </li>
+                                            <!-- end -->
+
+
+                                            <!--Added by Ashwini N Kandgal  -->
+                                            <li>
+
+                                            </li>
+                                            <!-- Code ended by Ashwini N Kandgal -->
+
+
+                                            <li><a href="StudentLoginNewAction.do?method=FeePayementReceipts"> Fee
+                                                    Payment Details</a></li>
+
+
+
+
+
+                                            <li></li>
+
+                                            <li></li>
+
+                                            <li>
+
+                                            </li>
+                                            <li>
+
+                                            </li>
+                                            <li>
+
+                                                <a
+                                                    href="StudentLoginNewAction.do?method=certificateCourseStatus&amp;studentId=1472905&amp;courseId=5">Open
+                                                    Elective Status </a>
+                                            </li>
+                                            <li>
+
+                                            </li>
+
+                                            <li>
+
+                                            </li>
+                                            <li>
+
+                                            </li>
+                                            <li><!--<a href="hostelStudentViewMessage.do?method=initHostelStudentViewMessage" >Student View Message </a>
+         --></li>
+
+
+                                            <li><a
+                                                    href="displaySyllabusCoursePlan.do?method=initStudentSyllabusAndCoursePlan">Course
+                                                    Pack </a></li>
+
+
+
+
+
+
+
+
+                                            <li><a href="StudentLoginNewAction.do?method=initDocumentSubmissionStatus">Document
+                                                    Submission Status&nbsp;<img src="images/supportRequestnew_icon1.png"
+                                                        width="25" height="15" class="blinkImage"> </a></li>
+
+
+
+
+
+
+
+                                            <li>
+                                                <a href="StudentLoginNewAction.do?method=getCourseCompletionStatus">Programme
+                                                    Completion Status</a>
+                                            </li>
+
+                                            <li>
+
+
+
+
+
+                                                <a href="StudentLoginNewAction.do?method=viewMinorsHonoursMarksCard">Honours
+                                                    Result</a>
+
+
+
+                                            </li>
+                                        </ul>
+
+                                        <script type="text/javascript">
+                                            $("#displayDownloadNew").removeAttr("style");
+                                        </script>
+
+
+                                    </li>
+
+
+
+                                    <li class="test"><a href="#" class="parent">Apply Online&nbsp;<img
+                                                src="images/supportRequestnew_icon1.png" width="25"
+                                                id="displayOnlineNewLogo" style="display:none;" height="15"
+                                                class="blinkImage"></a>
+                                        <ul>
+
+
+                                            <!-- certificateRequest1.do?method=initCertificateRequest -->
+                                            <li><a href="javascript:void(0);" onclick="certificateRequest()">
+                                                    Certificate Request</a></li>
+                                            <li><a href="certificateRequest1.do?method=getCertificateStatus">Certificate
+                                                    Status</a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                            <!--attestMarksCard.do?method=initAttestMarksCard&studentId=1472905&isOriginalTranscript=false  -->
+                                            <li> <a href="javascript:void(0);"
+                                                    onclick="marksCardAttestation(1472905)">Marks Card Attestation
+                                                    &nbsp; <img src="images/supportRequestnew_icon1.png" width="25"
+                                                        height="15" class="blinkImage">
+                                                </a>
+                                            </li>
+                                            <!-- attestMarksCard.do?method=initOriginalTransScriptRequest&studentId=1472905&isOriginalTranscript=true -->
+                                            <li> <a href="javascript:void(0);"
+                                                    onclick="originalTranscriptRequest(1472905)">Original Transcript
+                                                    Request
+                                                    &nbsp; <img src="images/supportRequestnew_icon1.png" width="25"
+                                                        height="15" class="blinkImage">
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+
+
+                                    <li class="test"><a href="#" class="parent">Student Support </a>
+                                        <ul>
+
+                                            <li><a href="studentSupportRequest1.do?method=initStudentSupportRequest">Support
+                                                    Request </a></li>
+                                            <li><a href="facultyLocation.do?method=initFacultyLocation">Faculty Location
+                                                </a></li>
+
+                                            <li><a href="http://databank.christuniversity.in/" target="_blank">Data Bank
+                                                </a></li>
+                                            <li><a href="http://courses.christuniversity.in/login/index.php"
+                                                    target="_blank">My Course</a></li>
+
+
+
+
+                                        </ul>
+                                        <!-- 				<li onclick="facultyLocation()" class="home" style="" >Faculty Location</a></li>
+ -->
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="jquery/development-bundle/jquery-1.7.1.js"></script>
+    <script type="text/javascript" src="js/auditorium/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="css/auditorium/start/jquery-ui.css">
+    <script language="JavaScript" src="js/calendar_us.js"></script>
+    <link rel="stylesheet" type="text/css" href="jquery.confirm/jquery.confirm/jquery.confirm.css">
+    <script src="jquery.confirm/jquery.confirm/jquery.confirm.js"></script>
+    <script language="JavaScript" src="js/layout/studentHeaderNew.js?version=2.11"></script>
+
+    <div class="cotbox">
+        <div class="container cothight">
+
+
+
+
+
+
+            <script src="js/attendance/studentAbsencePeriodDetails.js?version=1.1" type="text/javascript"></script>
+
+            <link rel="stylesheet" type="text/css" href="css/styles.css">
+            <!--<script type="text/javascript" src="js/AC_RunActiveContent.js"></script>
+    <script type="text/javascript" src="js/sdmenu/sdmenu.js"></script>
+    <script type="text/javascript" src="js/ajax/Ajax.js"></script>
+    <script type="text/javascript" src="js/ajax/AjaxUtil.js"></script>
+    <script type="text/javascript" src="js/leftSwitchMenu.js"></script>
+	<script type="text/javascript" src="js/common.js"></script>
+	-->
+            <form name="studentWiseAttendanceSummaryForm" method="post"
+                action="/KnowledgePro/studentWiseAttendanceSummary.do">
+                <input type="hidden" name="formName" value="studentWiseAttendanceSummaryForm">
+                <input type="hidden" name="pageType" value="1">
+
+                <table width="100%" border="0">
+                    <tbody>
+                        <tr>
+                            <td colspan="3"><span>Attendance
+                                    <span>&gt;&gt; Absence Details &gt;&gt;</span></span></td>
+                        </tr>
+                        <tr>
+                            <td valign="top">
+                                <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                    <tbody>
+                                        <tr>
+                                            <td width="9"><img src="images/st_Tright_03_01.gif" width="9" height="29">
+                                            </td>
+                                            <td background="images/st_Tcenter.gif"><big><b>Absence Details</b></big>
+                                            </td>
+
+                                            <td width="10"><img src="images/st_Tright_1_01.gif" width="9" height="29">
+                                            </td>
+                                        </tr>
+                                        <tr height="10%">
+                                            <td height="20" valign="top" background="images/Tright_03_03.gif"></td>
+                                            <td valign="top" height="10%">
+
+                                                <font color="black" size="2px">
+                                                </font>
+                                            </td>
+                                            <td valign="top" background="images/Tright_3_3.gif" class="news"></td>
+                                        </tr>
+                                        <tr>
+                                            <td height="19" valign="top" background="images/Tright_03_03.gif"></td>
+                                            <td valign="top" class="news">
+                                                <table width="100%" border="0" align="center" cellpadding="0"
+                                                    cellspacing="0">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><img src="images/st_01.gif" width="5" height="5"></td>
+                                                            <td width="100%" background="images/st_02.gif"></td>
+
+                                                            <td><img src="images/st_03.gif" width="5" height="5"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="5" background="images/st_left.gif"></td>
+                                                            <td valign="top">
+
+                                                                <div align="right">
+                                                                    <font color="green">Co-curricular Leave</font><br>
+                                                                    <font color="#ee7600">Medical Leave</font>
+                                                                </div>
+                                                                <table width="100%" cellspacing="1" cellpadding="1"
+                                                                    border="0"
+                                                                    class="table table-striped table-bordered table-condensed">
+
+
+                                                                    <!--Ashwini N Kandgal  -->
+
+                                                                    <tbody>
+                                                                        <tr class="text-danger">
+                                                                            <th>
+                                                                                <div align="center">Date</div>
+                                                                            </th>
+                                                                            <th>
+                                                                                <div align="center">Day </div>
+                                                                            </th>
+
+                                                                            <th>
+                                                                                <div align="center">
+                                                                                    Period1
+                                                                                </div>
+                                                                            </th>
+
+                                                                            <th>
+                                                                                <div align="center">
+                                                                                    Period2
+                                                                                </div>
+                                                                            </th>
+
+                                                                            <th>
+                                                                                <div align="center">
+                                                                                    Period3
+                                                                                </div>
+                                                                            </th>
+
+                                                                            <th>
+                                                                                <div align="center">
+                                                                                    Period4
+                                                                                </div>
+                                                                            </th>
+
+                                                                            <th>
+                                                                                <div align="center">
+                                                                                    Period5
+                                                                                </div>
+                                                                            </th>
+
+                                                                            <th>
+                                                                                <div align="center">
+                                                                                    Period6
+                                                                                </div>
+                                                                            </th>
+
+                                                                            <th>
+                                                                                <div align="center">
+                                                                                    Period7
+                                                                                </div>
+                                                                            </th>
+
+                                                                            <th>
+                                                                                <div align="center">Total</div>
+                                                                            </th>
+                                                                        </tr>
+
+
+                                                                        <tr>
+                                                                            <td align="center">04/11/2025 </td>
+                                                                            <td align="center">Tuesday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSHO634CSP
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSHO634CSP
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">2.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">07/11/2025 </td>
+                                                                            <td align="center">Friday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">BTGE637</font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">BTGE637</font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">CSHO634CSP
+                                                                                    </font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">CSHO634CSP
+                                                                                    </font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">4.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">13/11/2025 </td>
+                                                                            <td align="center">Thursday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">OEC672</font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">OEC672</font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">2.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">14/11/2025 </td>
+                                                                            <td align="center">Friday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">BTGE637</font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">BTGE637</font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">CSHO634CSP
+                                                                                    </font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">CSHO634CSP
+                                                                                    </font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">4.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">18/11/2025 </td>
+                                                                            <td align="center">Tuesday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    IT632P
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSHO634CSP
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSHO634CSP
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">3.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">21/11/2025 </td>
+                                                                            <td align="center">Friday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    IT632P
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSEIOT641E05
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">2.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">22/11/2025 </td>
+                                                                            <td align="center">Saturday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSEIOT641E05
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">1.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">28/11/2025 </td>
+                                                                            <td align="center">Friday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">IT632P</font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">CSEIOT641E05
+                                                                                    </font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">BTGE637</font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">BTGE637</font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">CSHO634CSP
+                                                                                    </font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">CSHO634CSP
+                                                                                    </font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">6.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">29/11/2025 </td>
+                                                                            <td align="center">Saturday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">HS622</font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">CSEIOT641E05
+                                                                                    </font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">CSE631P</font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">3.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">01/12/2025 </td>
+                                                                            <td align="center">Monday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">IT632P</font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">BTES652</font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">HS622</font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">CSHO634CSP
+                                                                                    </font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">IT632P</font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">IT632P</font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">6.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">02/12/2025 </td>
+                                                                            <td align="center">Tuesday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSHO634CSP
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSHO634CSP
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSHO681CSP24
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">3.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">06/12/2025 </td>
+                                                                            <td align="center">Saturday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSEIOT641E05
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSE631P
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">2.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">12/12/2025 </td>
+                                                                            <td align="center">Friday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">BTGE637</font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">BTGE637</font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">CSHO634CSP
+                                                                                    </font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">CSHO634CSP
+                                                                                    </font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">CSHO681CSP24
+                                                                                    </font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">5.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">16/12/2025 </td>
+                                                                            <td align="center">Tuesday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSE631P
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">CSHO634CSP
+                                                                                    </font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">CSHO634CSP
+                                                                                    </font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">CSHO681CSP24
+                                                                                    </font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">4.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">18/12/2025 </td>
+                                                                            <td align="center">Thursday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSE631P
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">1.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">19/12/2025 </td>
+                                                                            <td align="center">Friday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    BTGE637
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    BTGE637
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSHO634CSP
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">3.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">20/12/2025 </td>
+                                                                            <td align="center">Saturday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    IT631P
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSEIOT641E05
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">2.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">02/01/2026 </td>
+                                                                            <td align="center">Friday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    IT632P
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSEIOT641E05
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    BTGE637
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSHO634CSP
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSHO634CSP
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">5.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">12/01/2026 </td>
+                                                                            <td align="center">Monday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    IT632P
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">1.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">13/01/2026 </td>
+                                                                            <td align="center">Tuesday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSEIOT641E05
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSHO634CSP
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSHO634CSP
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSHO681CSP24
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">4.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">14/01/2026 </td>
+                                                                            <td align="center">Wednesday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">CSE682</font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+                                                                                    <font color="green">CSE682</font>
+
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">2.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">16/01/2026 </td>
+                                                                            <td align="center">Friday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    IT632P
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">1.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">22/01/2026 </td>
+                                                                            <td align="center">Thursday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    OEC672
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    OEC672
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">2.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">27/01/2026 </td>
+                                                                            <td align="center">Tuesday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSEIOT641E05
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">1.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">29/01/2026 </td>
+                                                                            <td align="center">Thursday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSE631P
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSE631P
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    OEC672
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    OEC672
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    IT631P
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSE631P
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">6.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td align="center">30/01/2026 </td>
+                                                                            <td align="center">Friday </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSHO634CSP
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSHO634CSP
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td>
+                                                                                <div align="center">
+
+
+
+
+                                                                                    CSHO681CSP24
+
+
+                                                                                </div>
+                                                                            </td>
+
+                                                                            <td align="center">3.0 </td>
+                                                                        </tr>
+
+
+
+                                                                    </tbody>
+                                                                </table>
+
+                                                                <table
+                                                                    class="table table-striped table-bordered table-condensed">
+
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <th colspan="6" class="text-danger">Periods
+                                                                                marked in green are Cocurricular Leave
+                                                                            </th>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td width="20%" colspan="2"><b>No. of
+                                                                                    periods absent
+                                                                                </b>&nbsp;&nbsp;:&nbsp;&nbsp;
+                                                                                <b class="text-danger">78.0 </b>
+                                                                            </td>
+                                                                            <td width="20%" colspan="2"><b>Total
+                                                                                    Cocurricular</b>&nbsp;&nbsp;:&nbsp;&nbsp;
+                                                                                <b class="text-danger">35.0</b>
+                                                                            </td>
+                                                                            <td width="20%" colspan="2"><b>Total periods
+                                                                                    absent</b>&nbsp;&nbsp;:&nbsp;&nbsp;
+                                                                                <b class="text-danger">78.0</b>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+
+                                                                <table
+                                                                    class="table table-striped table-bordered table-condensed">
+
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td width="50%">WIRELESS NETWORKS
+                                                                                (CSEIOT641E05) </td>
+                                                                            <td width="50%">9.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td width="50%">INTRODUCTION TO DATA CENTER
+                                                                                AND DESIGN PRINCIPLES (IT631P) </td>
+                                                                            <td width="50%">2.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td width="50%">SERVICE-LEARNING PROJECT
+                                                                                (CSE682) </td>
+                                                                            <td width="50%">2.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td width="50%">ABILITY ENHANCEMENT
+                                                                                COURSE-VI (OEC672) </td>
+                                                                            <td width="50%">6.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td width="50%">CS PROJECT (CSHO681CSP24)
+                                                                            </td>
+                                                                            <td width="50%">5.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td width="50%">PROFESSIONAL ETHICS (HS622)
+                                                                            </td>
+                                                                            <td width="50%">2.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td width="50%">DATA WAREHOUSING AND DATA
+                                                                                MINING (IT632P) </td>
+                                                                            <td width="50%">9.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td width="50%">PROFESSIONAL PSYCHOLOGY
+                                                                                (BTGE637) </td>
+                                                                            <td width="50%">11.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td width="50%">FOUNDATIONS OF DATA SCIENCE
+                                                                                (CSE631P) </td>
+                                                                            <td width="50%">7.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td width="50%">INTRUSION DETECTION AND
+                                                                                INCIDENT RESPONSE (CSHO634CSP) </td>
+                                                                            <td width="50%">24.0 </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                            <td width="50%">DRONE TECHNOLOGIES AND ITS
+                                                                                TRANSFORMATIVE APPLICATIONS (BTES652)
+                                                                            </td>
+                                                                            <td width="50%">1.0 </td>
+                                                                        </tr>
+
+                                                                    </tbody>
+                                                                </table>
+
+
+                                                                <table width="100%">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td width="50%"></td>
+                                                                            <td width="50%" align="left">
+                                                                                <input type="button" name=""
+                                                                                    value="Cancel"
+                                                                                    onclick="cancelAction()"
+                                                                                    class="btn btn-primary">
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </td>
+                                                            <td width="5" height="30" background="images/st_right.gif">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+
+                                                            <td height="5"><img src="images/st_04.gif" width="5"
+                                                                    height="5"></td>
+                                                            <td background="images/st_05.gif"></td>
+                                                            <td><img src="images/st_06.gif"></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                            <td valign="top" background="images/Tright_3_3.gif" class="news"></td>
+                                        </tr>
+                                        <tr>
+                                            <td height="19" valign="top" background="images/Tright_03_03.gif"></td>
+
+                                            <td valign="top" class="news">&nbsp;</td>
+                                            <td valign="top" background="images/Tright_3_3.gif" class="news"></td>
+                                        </tr>
+                                        <tr>
+                                            <td><img src="images/st_Tright_03_05.gif" width="9" height="29"></td>
+                                            <td width="0" background="images/st_TcenterD.gif"></td>
+                                            <td><img src="images/st_Tright_02.gif" width="9" height="29"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+
+        </div>
+    </div>
+    <!-- Footer  -->
+
+
+
+
+
+
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+
+
+    <div class="footerbottom clearfix">
+        <div class="container">
+            <div class="col-md-8 col-sm-8 link">
+                <!--<a href="#">Home</a>&nbsp;&nbsp;&nbsp;&nbsp;<a
+	href="#">About us</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#">Campus</a>&nbsp;&nbsp;&nbsp;&nbsp;<a
+	href="#">Academics</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#">Student
+services</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#">Admission</a>
+
+-->
+                <div class="copy">Copyright © 2015 - christuniversity.in</div>
+            </div>
+            <!--<div class="col-md-4 col-sm-4 ini">Website Design, Website
+Development, Web Hosting by INI Technologies Pvt Ltd, Cochin, India</div>
+-->
+        </div>
+    </div>
+
+
+
+
+
+
+</body><grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration>
+
+</html>

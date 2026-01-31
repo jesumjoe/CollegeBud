@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/attendance_provider.dart';
-import '../widgets/subject_card.dart';
+import 'package:attcalci/providers/attendance_provider.dart';
+import 'package:attcalci/widgets/subject_card.dart';
+import 'package:attcalci/widgets/animated_list_item.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -9,139 +10,229 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AttendanceProvider>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dashboard', style: TextStyle(color: Colors.white)),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.white),
-            onPressed: () => context.read<AttendanceProvider>().refreshData(),
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: () => context.read<AttendanceProvider>().logout(),
-          )
-        ],
-      ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: provider.isLoading && provider.subjects.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
               onRefresh: () => context.read<AttendanceProvider>().refreshData(),
-              child: provider.subjects.isEmpty
-                  ? Center(
-                      child: provider.error != null
-                          ? Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Text(provider.error!,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(color: Colors.red)),
-                            )
-                          : const Text('No Data Found'),
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      itemCount: provider.subjects.length + 1, // +1 for Header
-                      itemBuilder: (context, index) {
-                        if (index == 0) {
-                          // Header Section
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 12),
-                                child: Text(
-                                  "Hey, ${provider.studentName}",
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).primaryColor,
+              child: CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Stack(
+                      children: [
+                        // Lavender / Dark Navy Background Blob
+                        Container(
+                          height: 250,
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF1A237E)
+                                : const Color(
+                                    0xFFDEDCFF), // Indigo 900 vs Lavender
+                            borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(40),
+                              bottomRight: Radius.circular(40),
+                            ),
+                          ),
+                        ),
+                        Column(
+                          children: [
+                            // AppBar
+                            Padding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(20, 50, 20, 10),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text("Hello,",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              color: isDark
+                                                  ? Colors.white70
+                                                  : Colors.black54)),
+                                      Text(provider.studentName,
+                                          style: TextStyle(
+                                              fontSize: 22,
+                                              fontWeight: FontWeight.bold,
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
+                                    ],
                                   ),
-                                ),
+                                  Row(
+                                    children: [
+                                      // Refresh Button (Context specific)
+                                      IconButton(
+                                        icon: Icon(Icons.refresh,
+                                            color: isDark
+                                                ? Colors.white
+                                                : Colors.black54),
+                                        onPressed: () => context
+                                            .read<AttendanceProvider>()
+                                            .refreshData(),
+                                      ),
+                                    ],
+                                  )
+                                ],
                               ),
+                            ),
+
+                            // Overall Card overlaying the background
+                            if (provider.subjects.isNotEmpty)
                               _buildOverallCard(
-                                  context, provider.overallPercentage),
-                              const Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 8),
-                                child: Text("Subject Wise",
-                                    style: TextStyle(
-                                        color: Colors.grey,
-                                        fontWeight: FontWeight.bold)),
-                              ),
-                            ],
-                          );
-                        }
-                        return SubjectCard(stats: provider.subjects[index - 1]);
-                      },
+                                  context, provider.overallPercentage, isDark),
+                          ],
+                        )
+                      ],
                     ),
+                  ),
+
+                  // List Title
+                  if (provider.subjects.isNotEmpty)
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                        child: Text("My Subjects",
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: isDark ? Colors.white : Colors.black)),
+                      ),
+                    ),
+
+                  // Subject List
+                  if (provider.subjects.isNotEmpty)
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) => AnimatedListItem(
+                            index: index,
+                            child:
+                                SubjectCard(stats: provider.subjects[index])),
+                        childCount: provider.subjects.length,
+                      ),
+                    )
+                  else
+                    SliverFillRemaining(
+                      child: Center(
+                        child: provider.error != null
+                            ? Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Text(provider.error!,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(color: Colors.red)),
+                              )
+                            : Text('No Data Found',
+                                style: TextStyle(
+                                    color:
+                                        isDark ? Colors.white : Colors.black)),
+                      ),
+                    )
+                ],
+              ),
             ),
     );
   }
 
-  Widget _buildOverallCard(BuildContext context, double percentage) {
-    final Color color = percentage < 75.0 ? Colors.red : Colors.green;
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 6,
-      color: Theme.of(context).colorScheme.primary,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildOverallCard(
+      BuildContext context, double percentage, bool isDark) {
+    // Light: Pastel Yellow (FFD54F) | Dark: Muted Gold (FBC02D)
+    final Color cardColor =
+        isDark ? const Color(0xFFFBC02D) : const Color(0xFFFFD54F);
+    final Color textColor = Colors.black; // Text on yellow is always black
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(24),
+        border:
+            Border.all(color: isDark ? Colors.white24 : Colors.black, width: 2),
+        boxShadow: const [
+          BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 4))
+        ],
+      ),
+      padding: const EdgeInsets.all(24),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Overall Attendance",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: textColor)),
+              const SizedBox(height: 8),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  const Text(
-                    "Overall Attendance",
-                    style: TextStyle(color: Colors.white70, fontSize: 14),
-                  ),
-                  const SizedBox(height: 4),
                   Text(
                     "${percentage.toStringAsFixed(1)}%",
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.w900,
+                        height: 1,
+                        color: textColor),
                   ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: color.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: color, width: 2),
-                    ),
-                    child: Text(
-                      percentage < 75 ? "Direct Risk" : "Safe",
-                      style: TextStyle(
-                          color: color.computeLuminance() > 0.5
-                              ? color
-                              : Colors.white,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  )
                 ],
               ),
+              const SizedBox(height: 8),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.black, width: 1.5),
+                ),
+                child: Text(
+                  percentage < 75 ? "Direct Risk ⚠️" : "Safe Zone ✅",
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                      color: Colors.black),
+                ),
+              )
+            ],
+          ),
+
+          // Ring Chart
+          SizedBox(
+            height: 80,
+            width: 80,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                CircularProgressIndicator(
+                  value: 1,
+                  color: Colors.white.withOpacity(0.5),
+                  strokeWidth: 12,
+                ),
+                CircularProgressIndicator(
+                  value: percentage / 100,
+                  color: Colors.black,
+                  strokeWidth: 12,
+                  strokeCap: StrokeCap.round,
+                ),
+                Center(
+                    child: Icon(
+                        percentage < 75
+                            ? Icons.warning_amber_rounded
+                            : Icons.check_circle_outline,
+                        size: 32,
+                        color: Colors.black))
+              ],
             ),
-            SizedBox(
-              height: 80,
-              width: 80,
-              child: CircularProgressIndicator(
-                value: percentage / 100,
-                backgroundColor: Colors.white24,
-                color: color,
-                strokeWidth: 8,
-              ),
-            ),
-          ],
-        ),
+          )
+        ],
       ),
     );
   }
