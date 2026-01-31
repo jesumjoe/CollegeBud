@@ -1,4 +1,4 @@
-# attcalci
+# CollegeBud
 
 A new Flutter project.
 
