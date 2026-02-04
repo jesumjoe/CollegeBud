@@ -87,7 +87,10 @@ class DashboardScreen extends StatelessWidget {
                             // Overall Card overlaying the background
                             if (provider.subjects.isNotEmpty)
                               _buildOverallCard(
-                                  context, provider.overallPercentage, isDark),
+                                  context,
+                                  provider.overallPercentage,
+                                  provider.officialOverallPercentage,
+                                  isDark),
                           ],
                         )
                       ],
@@ -140,8 +143,8 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildOverallCard(
-      BuildContext context, double percentage, bool isDark) {
+  Widget _buildOverallCard(BuildContext context, double percentage,
+      double officialPercentage, bool isDark) {
     // Light: Pastel Yellow (FFD54F) | Dark: Muted Gold (FBC02D)
     final Color cardColor =
         isDark ? const Color(0xFFFBC02D) : const Color(0xFFFFD54F);
@@ -200,7 +203,16 @@ class DashboardScreen extends StatelessWidget {
                       fontSize: 12,
                       color: Colors.black),
                 ),
-              )
+              ),
+              const SizedBox(height: 8),
+              if ((percentage - officialPercentage).abs() > 0.1)
+                Text(
+                  "Original: ${officialPercentage.toStringAsFixed(1)}%",
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: textColor.withOpacity(0.7)),
+                ),
             ],
           ),
 

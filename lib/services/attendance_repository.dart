@@ -2,6 +2,9 @@ import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart';
 import '../models/subject_stats.dart';
+import '../models/time_table.dart';
+import '../models/last_absence_info.dart';
+import '../models/absence_detail.dart';
 import 'login_service.dart';
 
 class AttendanceRepository {
@@ -11,6 +14,8 @@ class AttendanceRepository {
       '$_baseUrl/studentWiseAttendanceSummary.do?method=getIndividualStudentWiseSubjectAndActivityAttendanceSummary';
   static const String _detailsUrl =
       '$_baseUrl/studentWiseAttendanceSummary.do?method=getStudentAbscentWithCocularLeave';
+  static const String _timeTableUrl =
+      '$_baseUrl/viewMyTimeTable1.do?method=initViewStudentTimeTable';
 
   Future<Map<String, dynamic>> fetchAttendance(
       String initialCookieHeader) async {
@@ -213,13 +218,14 @@ class AttendanceRepository {
       if (detailsResponse.statusCode != 200)
         throw Exception('Failed to fetch details');
 
-      print(
-          'DEBUG: Details Page Fetched. Body Length: ${detailsResponse.body.length}');
-      _parseDetailsAndMerge(detailsResponse.body, statsMap);
+      final detailsResult =
+          _parseDetailsAndMerge(detailsResponse.body, statsMap);
 
       return {
         'name': studentName,
         'stats': statsMap,
+        'lastAbsence': detailsResult['lastAbsence'],
+        'history': detailsResult['history'],
       };
     } finally {
       client.close();
@@ -275,7 +281,7 @@ class AttendanceRepository {
     return map;
   }
 
-  void _parseDetailsAndMerge(
+  Map<String, dynamic> _parseDetailsAndMerge(
       String htmlBody, Map<String, SubjectStats> statsMap) {
     final document = parser.parse(htmlBody);
     final tables = document.querySelectorAll('table');
@@ -369,8 +375,13 @@ class AttendanceRepository {
     // Note: processedRowHashes and totalProcessedRows variables should be declared if not already,
     // but in this context they were re-declared.
     // We will assume they are needed here for the logic block.
+    // Note: processedRowHashes and totalProcessedRows variables should be declared if not already,
+    // but in this context they were re-declared.
+    // We will assume they are needed here for the logic block.
     final Set<String> processedRowHashes = {};
     int totalProcessedRows = 0;
+    LastAbsenceInfo? lastAbsenceInfo;
+    List<AbsenceDetail> history = [];
 
     // We only want the FIRST table with class 'table-striped table-bordered table-condensed'
     // or similar structure. The summary tables are often at the bottom.
@@ -457,20 +468,191 @@ class AttendanceRepository {
               statsMap[subjectCode]!.greenDutyLeaves++;
               print(
                   'DEBUG: Found DUTY LEAVE for $subjectCode (Col $p) | Row: $rowText');
-            } else {
-              // It's a regular absent.
-              // We don't need to increment 'blueAbsents' because that comes from the Summary page
-              // which is the "source of truth" for total absents.
-              // However, validation: If summary says X absents, we expect X non-green cells here.
+            }
+
+            // Capture Details for History & Last Absence
+            // Date is in cells[0] usually: dd/MM/yyyy
+            if (cells.isNotEmpty) {
+              final dateStr = cells[0].text.trim();
+              final date = _parseDate(dateStr);
+              if (date != null) {
+                // Common Data
+                String name = subjectCode ?? "Unknown Subject";
+                if (statsMap.containsKey(subjectCode)) {
+                  name = statsMap[subjectCode]!.name;
+                }
+                int period = p - 2;
+
+                // 1. Add to History (Both Absent and OD)
+                history.add(AbsenceDetail(
+                  date: date,
+                  subjectName: name,
+                  subjectCode: subjectCode ?? "UNKNOWN",
+                  period: period,
+                  isDutyLeave: isOD,
+                ));
+
+                // 2. Update Last "Bunk" (Only if NOT OD)
+                if (!isOD) {
+                  if (lastAbsenceInfo == null ||
+                      date.isAfter(lastAbsenceInfo!.date) ||
+                      (date.isAtSameMomentAs(lastAbsenceInfo!.date) &&
+                          period > lastAbsenceInfo!.period)) {
+                    // Calculate Impact
+                    double impact = 0.0;
+                    if (statsMap.containsKey(subjectCode)) {
+                      final total = statsMap[subjectCode]!.totalHours;
+                      if (total > 0) {
+                        impact = (1.0 / total) * 100;
+                      }
+                    }
+
+                    lastAbsenceInfo = LastAbsenceInfo(
+                      date: date,
+                      subjectName: name,
+                      period: period,
+                      impact: impact,
+                    );
+                  }
+                }
+              }
             }
           }
         }
       }
     }
 
-    print("DEBUG: Total Details Rows Processed: $totalProcessedRows");
+    print(
+        "DEBUG: Total Details Rows Processed: $totalProcessedRows. History Size: ${history.length}");
 
-    // Final cleanup: If we have unmapped subjects that never found a matching code in details,
-    // they remain as is.
+    return {
+      'lastAbsence': lastAbsenceInfo,
+      'history': history,
+    };
+  }
+
+  // Helper to parse date dd/MM/yyyy
+  DateTime? _parseDate(String dateStr) {
+    try {
+      final parts = dateStr.split('/');
+      if (parts.length == 3) {
+        return DateTime(
+          int.parse(parts[2]),
+          int.parse(parts[1]),
+          int.parse(parts[0]),
+        );
+      }
+    } catch (e) {
+      // ignore
+    }
+    return null;
+  }
+
+  // --- Time Table Feature ---
+
+  Future<List<TimeTableDay>> fetchTimeTable(String cookieHeader) async {
+    final client = http.Client();
+    final Map<String, String> cookieJar =
+        LoginService.parseCookieToMap(cookieHeader);
+
+    try {
+      print('DEBUG: Fetching Time Table URL: $_timeTableUrl');
+      final headers = {
+        'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
+        'Cookie': LoginService.buildCookieHeader(cookieJar),
+        'Referer':
+            'https://kp.christuniversity.in/KnowledgePro/StudentLogin.do', // Assuming referer
+      };
+
+      final response =
+          await client.get(Uri.parse(_timeTableUrl), headers: headers);
+      if (response.statusCode != 200) {
+        throw Exception(
+            'Failed to fetch time table. Status: ${response.statusCode}');
+      }
+
+      print('DEBUG: Time Table Page Fetched. Parsing...');
+      return _parseTimeTable(response.body);
+    } finally {
+      client.close();
+    }
+  }
+
+  List<TimeTableDay> _parseTimeTable(String htmlBody) {
+    final document = parser.parse(htmlBody);
+    final List<TimeTableDay> timeTable = [];
+
+    // Search ALL rows in the document to find Time Table rows
+    // This avoids guessing the specific table Structure (Nested vs Master)
+    final allRows = document.querySelectorAll('tr');
+
+    for (var row in allRows) {
+      // IMPORTANT: Use .children to get ONLY direct <td> elements
+      // This prevents fetching nested <td>s from inner tables
+      final cells = row.children.where((e) => e.localName == 'td').toList();
+
+      if (cells.length < 3) continue; // Expecting Day + at least 2 periods
+
+      final String dayName = cells[0].text.trim();
+
+      // Check if first cell is a valid day name
+      bool isDay = false;
+      final validDays = [
+        'monday',
+        'tuesday',
+        'wednesday',
+        'thursday',
+        'friday',
+        'saturday',
+        'sunday'
+      ];
+
+      for (var d in validDays) {
+        if (dayName.toLowerCase().startsWith(d)) {
+          isDay = true;
+          break;
+        }
+      }
+
+      if (!isDay) continue;
+
+      // Found a candidate row
+      List<String> periods = [];
+
+      // Skip the first cell (Day Name)
+      // Iterate direct children
+      for (int i = 1; i < cells.length; i++) {
+        String subject = cells[i].text.trim();
+
+        // Cleanup
+        subject = subject.replaceAll(RegExp(r'\s+'), ' ');
+
+        // Filter out invalid/empty subjects
+        if (subject.isEmpty) continue;
+        if (subject.toLowerCase() == dayName.toLowerCase())
+          continue; // Safety check
+
+        // Heuristic: If subject is just a number (like period index), skip?
+        // Sometimes headers have '1', '2', '3'.
+        // But usually headers are <th> not <td>.
+        // Let's keep data for now unless it looks like garbage.
+
+        periods.add(subject);
+      }
+
+      // Add if we found reasonable periods (e.g. < 12)
+      // If we found 20+, it might still be a master row if we didn't use children correctly,
+      // but row.children should fix it.
+      if (periods.isNotEmpty && periods.length < 15) {
+        // Check if we already added this day (avoid duplicates from nested structures having same text)
+        if (!timeTable.any((d) => d.dayName == dayName)) {
+          timeTable.add(TimeTableDay(dayName: dayName, periods: periods));
+        }
+      }
+    }
+
+    print('DEBUG: Parsed ${timeTable.length} days from Time Table.');
+    return timeTable;
   }
 }

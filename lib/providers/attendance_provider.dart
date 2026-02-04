@@ -1,9 +1,13 @@
 import 'dart:typed_data';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/subject_stats.dart';
+import '../models/last_absence_info.dart';
+import '../models/absence_detail.dart';
 import '../services/login_service.dart';
 import '../services/attendance_repository.dart';
+import '../models/time_table.dart';
 
 class AttendanceProvider with ChangeNotifier {
   final _storage = const FlutterSecureStorage();
@@ -16,6 +20,8 @@ class AttendanceProvider with ChangeNotifier {
   String? _error;
   bool _isLoggedIn = false;
   Map<String, String>? _sessionHeaders;
+  LastAbsenceInfo? _lastAbsenceInfo;
+  List<AbsenceDetail> _absenceHistory = [];
 
   // Login State
   Uint8List? _captchaImage;
@@ -28,6 +34,27 @@ class AttendanceProvider with ChangeNotifier {
   String? get error => _error;
   bool get isLoggedIn => _isLoggedIn;
   Uint8List? get captchaImage => _captchaImage;
+  LastAbsenceInfo? get lastAbsenceInfo => _lastAbsenceInfo;
+
+  // Group absences by date (Descending)
+  Map<DateTime, List<AbsenceDetail>> get absencesByDate {
+    final Map<DateTime, List<AbsenceDetail>> map = {};
+    for (var detail in _absenceHistory) {
+      if (!map.containsKey(detail.date)) {
+        map[detail.date] = [];
+      }
+      map[detail.date]!.add(detail);
+    }
+    // Sort dates descending
+    final sortedKeys = map.keys.toList()..sort((a, b) => b.compareTo(a));
+    final Map<DateTime, List<AbsenceDetail>> sortedMap = {};
+    for (var key in sortedKeys) {
+      sortedMap[key] = map[key]!;
+      // Sort periods within date? (Usually they are P1, P2...)
+      sortedMap[key]!.sort((a, b) => a.period.compareTo(b.period));
+    }
+    return sortedMap;
+  }
 
   AttendanceProvider() {
     checkSession(); // Auto-check on create
@@ -136,6 +163,22 @@ class AttendanceProvider with ChangeNotifier {
     return (totalAttended / totalHours) * 100;
   }
 
+  // Official Stats (Treats Duty Leave as Absent)
+  double get officialOverallPercentage {
+    if (_subjects.isEmpty) return 0.0;
+    int totalHours = 0;
+    int totalAttended = 0;
+
+    for (var s in _subjects) {
+      totalHours += s.totalHours;
+      int officialAbsents = s.blueAbsents.clamp(0, s.totalHours);
+      totalAttended += (s.totalHours - officialAbsents);
+    }
+
+    if (totalHours == 0) return 0.0;
+    return (totalAttended / totalHours) * 100;
+  }
+
   Future<void> refreshData() async {
     if (_sessionHeaders == null) return;
 
@@ -146,6 +189,11 @@ class AttendanceProvider with ChangeNotifier {
 
       final statsMap = result['stats'] as Map<String, SubjectStats>;
       _studentName = result['name'] as String;
+      _lastAbsenceInfo = result['lastAbsence'] as LastAbsenceInfo?;
+      _absenceHistory = (result['history'] as List<dynamic>?)
+              ?.cast<AbsenceDetail>()
+              .toList() ??
+          [];
 
       if (statsMap.isEmpty) {
         _error =
@@ -153,6 +201,15 @@ class AttendanceProvider with ChangeNotifier {
       }
       _subjects = statsMap.values.toList();
       _subjects.sort((a, b) => a.code.compareTo(b.code));
+
+      // Cache data for background comparison
+      try {
+        final String jsonString =
+            jsonEncode(_subjects.map((e) => e.toJson()).toList());
+        await _storage.write(key: 'cached_attendance_data', value: jsonString);
+      } catch (e) {
+        print('Warning: Failed to cache attendance data: $e');
+      }
 
       // Load saved name if any
       final String? savedName = await _storage.read(key: 'student_name');
@@ -185,6 +242,42 @@ class AttendanceProvider with ChangeNotifier {
     _isLoggedIn = false;
     _subjects = [];
     _captchaImage = null;
+    _lastAbsenceInfo = null;
+    _absenceHistory = [];
+    _timeTable = [];
+    notifyListeners();
+  }
+
+  // Time Table
+  List<TimeTableDay> _timeTable = [];
+  List<TimeTableDay> get timeTable => _timeTable;
+
+  Future<void> fetchTimeTable() async {
+    if (_sessionHeaders == null) return;
+    try {
+      final data =
+          await _repository.fetchTimeTable(_sessionHeaders!['Cookie']!);
+      _timeTable = data;
+
+      // Cache time table
+      try {
+        final String jsonString =
+            jsonEncode(_timeTable.map((e) => e.toJson()).toList());
+        await _storage.write(key: 'cached_time_table', value: jsonString);
+      } catch (e) {
+        print('Warning: Failed to cache time table: $e');
+      }
+    } catch (e) {
+      print('ERROR: Failed to fetch time table: $e');
+      // Try load cached
+      try {
+        final String? cached = await _storage.read(key: 'cached_time_table');
+        if (cached != null) {
+          final List<dynamic> list = jsonDecode(cached);
+          _timeTable = list.map((e) => TimeTableDay.fromJson(e)).toList();
+        }
+      } catch (_) {}
+    }
     notifyListeners();
   }
 
