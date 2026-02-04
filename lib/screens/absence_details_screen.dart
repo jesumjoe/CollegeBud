@@ -37,17 +37,36 @@ class AbsenceDetailsScreen extends StatelessWidget {
           : Column(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8.0),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                   color: isDark ? Colors.black26 : Colors.grey[200],
                   width: double.infinity,
-                  child: const Center(
-                    child: Text(
-                      "Periods marked in Green are Co-curricular Leave",
-                      style: TextStyle(
-                          color: Colors.green,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12),
-                    ),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.star_rounded,
+                              color: Colors.green, size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            "Total Duty Leaves: ${provider.subjects.fold(0, (sum, s) => sum + s.greenDutyLeaves)}",
+                            style: TextStyle(
+                                color: isDark ? Colors.white : Colors.black87,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        "Periods marked in Green are Co-curricular Leave",
+                        style: TextStyle(
+                            color: Colors.green,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 12),
+                      ),
+                    ],
                   ),
                 ),
                 Expanded(
