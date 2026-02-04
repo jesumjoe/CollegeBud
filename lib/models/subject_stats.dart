@@ -31,4 +31,24 @@ class SubjectStats {
     final int present = totalHours - realAbsents;
     return (present / totalHours) * 100;
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'code': code,
+      'name': name,
+      'totalHours': totalHours,
+      'blueAbsents': blueAbsents,
+      'greenDutyLeaves': greenDutyLeaves,
+    };
+  }
+
+  factory SubjectStats.fromJson(Map<String, dynamic> json) {
+    return SubjectStats(
+      code: json['code'] ?? '',
+      name: json['name'] ?? '',
+      totalHours: json['totalHours'] ?? 0,
+      blueAbsents: json['blueAbsents'] ?? 0,
+      greenDutyLeaves: json['greenDutyLeaves'] ?? 0,
+    );
+  }
 }

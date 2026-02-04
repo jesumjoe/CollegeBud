@@ -1,11 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
+import 'package:workmanager/workmanager.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:attcalci/providers/attendance_provider.dart';
 import 'package:attcalci/providers/theme_provider.dart';
 import 'package:attcalci/screens/login_screen.dart';
 import 'package:attcalci/screens/home_screen.dart';
+import 'services/background_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // 1. Initialize Local Notifications & Request Permission
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+
+  const InitializationSettings initializationSettings =
+      InitializationSettings(android: initializationSettingsAndroid);
+
+  await flutterLocalNotificationsPlugin.initialize(
+    initializationSettings,
+  );
+
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.requestNotificationsPermission();
+
+  // 2. Initialize Workmanager
+  Workmanager().initialize(
+    callbackDispatcher, // The top-level function from background_service.dart
+    isInDebugMode: kDebugMode,
+  );
+
+  // 3. Register Periodic Task (Every 1 Hour)
+  Workmanager().registerPeriodicTask(
+    "com.attcalci.attendance_check",
+    "attendance_check_task",
+    frequency: const Duration(hours: 1),
+    constraints: Constraints(
+      networkType: NetworkType.connected, // Needs internet
+    ),
+    existingWorkPolicy:
+        ExistingPeriodicWorkPolicy.keep, // Correct Enum for older version
+  );
+
   runApp(
     MultiProvider(
       providers: [
