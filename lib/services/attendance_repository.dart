@@ -371,6 +371,16 @@ class AttendanceRepository {
     statsMap.addAll(codeKeyedStats);
     print('DEBUG: Re-keyed Stats Map keys: ${statsMap.keys.toList()}');
 
+    // Find Mentoring Subject Key for re-mapping Extra Curricular
+    String? mentoringKey;
+    for (var entry in statsMap.entries) {
+      if (entry.value.name.toLowerCase().contains("mentoring")) {
+        mentoringKey = entry.key;
+        print("DEBUG: Found Mentoring Subject Key: $mentoringKey");
+        break;
+      }
+    }
+
     // --- PHASE 3: Process Attendance Rows (Using Codes) ---
     // Note: processedRowHashes and totalProcessedRows variables should be declared if not already,
     // but in this context they were re-declared.
@@ -444,14 +454,16 @@ class AttendanceRepository {
           String? subjectCode;
           if (statsMap.containsKey(text)) {
             subjectCode = text;
-          } else {
-            // Try to find if this matches any code in our map (maybe unmapped)
-            // This relies on the text being the CODE itself, which it usually is in details
+          } else if (text.toLowerCase().contains("extra curricular") &&
+              mentoringKey != null) {
+            // Remap Extra Curricular to Mentoring
+            subjectCode = mentoringKey;
           }
 
           if (subjectCode != null) {
             // Check for Green Font Tag specifically as per user instruction
             bool isOD = false;
+
             final fontTag = cell.querySelector('font');
             if (fontTag != null) {
               final color = fontTag.attributes['color']?.toLowerCase() ?? '';

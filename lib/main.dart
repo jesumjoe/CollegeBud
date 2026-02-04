@@ -13,41 +13,49 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // 1. Initialize Local Notifications & Request Permission
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  try {
+    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        FlutterLocalNotificationsPlugin();
 
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
-  const InitializationSettings initializationSettings =
-      InitializationSettings(android: initializationSettingsAndroid);
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
 
-  await flutterLocalNotificationsPlugin.initialize(
-    initializationSettings,
-  );
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+    );
 
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.requestNotificationsPermission();
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
+  } catch (e) {
+    debugPrint("Error initializing notifications: $e");
+  }
 
   // 2. Initialize Workmanager
-  Workmanager().initialize(
-    callbackDispatcher, // The top-level function from background_service.dart
-    isInDebugMode: kDebugMode,
-  );
+  try {
+    Workmanager().initialize(
+      callbackDispatcher, // The top-level function from background_service.dart
+      isInDebugMode: kDebugMode,
+    );
 
-  // 3. Register Periodic Task (Every 1 Hour)
-  Workmanager().registerPeriodicTask(
-    "com.attcalci.attendance_check",
-    "attendance_check_task",
-    frequency: const Duration(hours: 1),
-    constraints: Constraints(
-      networkType: NetworkType.connected, // Needs internet
-    ),
-    existingWorkPolicy:
-        ExistingPeriodicWorkPolicy.keep, // Correct Enum for older version
-  );
+    // 3. Register Periodic Task (Every 1 Hour)
+    Workmanager().registerPeriodicTask(
+      "com.attcalci.attendance_check",
+      "attendance_check_task",
+      frequency: const Duration(hours: 1),
+      constraints: Constraints(
+        networkType: NetworkType.connected, // Needs internet
+      ),
+      existingWorkPolicy:
+          ExistingPeriodicWorkPolicy.keep, // Correct Enum for older version
+    );
+  } catch (e) {
+    debugPrint("Error initializing workmanager: $e");
+  }
 
   runApp(
     MultiProvider(

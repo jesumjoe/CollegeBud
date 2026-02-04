@@ -10,7 +10,9 @@ import '../services/attendance_repository.dart';
 import '../models/time_table.dart';
 
 class AttendanceProvider with ChangeNotifier {
-  final _storage = const FlutterSecureStorage();
+  final _storage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
   final _loginService = LoginService();
   final _repository = AttendanceRepository();
 
